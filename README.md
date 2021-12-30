@@ -4,7 +4,7 @@
 
 <sup>The cover artwork is not hosted in this repository and &copy;opyrighted by Max Ziebell</sup>
 
-Create transformations based on a square defining the view port. Works great for animations and dynamic framing.
+Create transformations based on a square defining the view port for animations and dynamic framing.
 
 
 Content Delivery Network (CDN)
