@@ -10,7 +10,7 @@ maintaind since 2018 by Max Ziebell, (https://maxziebell.de). MIT-license
 * 1.1.0 Tweaked requestAnimationframe, sceneElm scope
 * 1.2.0	Github release under MIT-license, refactored to HypeDynamicCamera
 * 1.2.1 Refactored to use a Mutation Observer instead of requestAnimationFrame
-* 1.2.2 Fixed inital update regression after switching to Mutation Observer
+* 1.2.2 Fixed initial update regression after switching to Mutation Observer
 */
 if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (function () {
 
