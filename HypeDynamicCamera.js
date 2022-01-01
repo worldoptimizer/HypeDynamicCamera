@@ -1,5 +1,5 @@
 /*!
-Hype Dynamic Camera 1.2.1
+Hype Dynamic Camera 1.2.2
 copyright (c) 2015 by Lucky (Tumult Forum @Luckyde)
 maintaind since 2018 by Max Ziebell, (https://maxziebell.de). MIT-license
 */
@@ -10,6 +10,7 @@ maintaind since 2018 by Max Ziebell, (https://maxziebell.de). MIT-license
 * 1.1.0 Tweaked requestAnimationframe, sceneElm scope
 * 1.2.0	Github release under MIT-license, refactored to HypeDynamicCamera
 * 1.2.1 Refactored to use a Mutation Observer instead of requestAnimationFrame
+* 1.2.2 Fixed inital update regression after switching to Mutation Observer
 */
 if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (function () {
 
@@ -26,6 +27,9 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 					attributes: true,
 					attributeFilter: [ "style"],
 				});
+
+				// fire observer once manually
+				cameraElm.setAttribute('style', cameraElm.getAttribute('style'));
 				return;
 			}
 
@@ -90,6 +94,9 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 				attributes: true,
 				attributeFilter: [ "style"],
 			});
+
+			// fire observer once manually
+			cameraElm.setAttribute('style', cameraElm.getAttribute('style'));
 		}	
 	}
 
@@ -119,7 +126,7 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 	 * @property {String} version Version of the extension
 	 */
 	 var HypeDynamicCamera = {
-		version: '1.2.1',
+		version: '1.2.2',
 	};
 
 	/** 
