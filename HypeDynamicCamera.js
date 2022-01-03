@@ -1,5 +1,5 @@
 /*!
-Hype Dynamic Camera 1.2.3
+Hype Dynamic Camera 1.2.4
 copyright (c) 2015 by Lucky (Tumult Forum @Luckyde)
 maintaind since 2018 by Max Ziebell, (https://maxziebell.de). MIT-license
 */
@@ -11,16 +11,39 @@ maintaind since 2018 by Max Ziebell, (https://maxziebell.de). MIT-license
 * 1.2.0	Github release under MIT-license, refactored to HypeDynamicCamera
 * 1.2.1 Refactored to use a Mutation Observer instead of requestAnimationFrame
 * 1.2.2 Fixed inital update regression after switching to Mutation Observer
-* 1.2.3 Moved the automatic application of the observer to HypeScenePrepareForDisplay 
+* 1.2.3 Moved the automatic application of the observer to HypeScenePrepareForDisplay
+* 1.2.4 Added border style for IDE, HypeDynamicCamera.hideBorderInIDE, .dynamic-camera-no-border and --dynamic-camera-border
 */
 if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (function () {
 
 	// camera observer lookup
 	var _cameraObserverLookup = {};
+	var _installedCSS =  false;
+	var _hideBorderInIDE = false;
 
+	/* @const */
+	const _isHypeIDE = window.location.href.indexOf("/Hype/Scratch/HypeScratch.") != -1;
+
+	/* Install CSS needed for this extension */
+	if (_isHypeIDE && !_installedCSS) {
+		// delay a frame
+		requestAnimationFrame(function(){
+			if (_hideBorderInIDE) return;
+			_installedCSS = true;
+			var s=document.createElement("style");
+			s.setAttribute("type","text/css");
+			s.appendChild(document.createTextNode('[data-dynamic-camera]:not(.dynamic-camera-no-border) { box-sizing: border-box !important; border: var(--dynamic-camera-border, solid red 4px) !important;}'));
+			document.getElementsByTagName("head")[0].appendChild(s);
+		})
+	}
+	
 	function HypeDocumentLoad (hypeDocument, element, event) {
 		
 		hypeDocument.setupDynamicCamera =  function(cameraElm, stageElm, options) {
+			
+			// default options to object
+			options = options || {};
+			
 			// restart observer if already created
 			if (_cameraObserverLookup[cameraElm.id]) {
 				_cameraObserverLookup[cameraElm.id].observe(cameraElm, {
@@ -39,9 +62,6 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 			if (stageElm && typeof stageElm == 'string') stageElm = sceneElm.querySelector(stageElm);
 			stageElm = stageElm || sceneElm;
 			if (!(stageElm && cameraElm)) return;
-
-			// default options to object
-			options = options || {};
 
 			// setup variables
 			var DEG = 180 / Math.PI;
@@ -97,7 +117,8 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 
 			// fire observer once manually
 			cameraElm.setAttribute('style', cameraElm.getAttribute('style'));
-		}	
+		}
+
 	}
 
 	function HypeSceneUnload (hypeDocument, element, event) {
@@ -111,7 +132,7 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 		var sceneElm = document.getElementById(hypeDocument.currentSceneId());
 		sceneElm.querySelectorAll('[data-dynamic-camera]').forEach(function(elm){
 			var stageSelector = elm.getAttribute('data-dynamic-camera');
-			hypeDocument.setupDynamicCamera(elm, stageSelector);	
+			hypeDocument.setupDynamicCamera(elm, stageSelector);
 		});
 	}
 
@@ -126,7 +147,10 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 	 * @property {String} version Version of the extension
 	 */
 	 var HypeDynamicCamera = {
-		version: '1.2.3',
+		version: '1.2.4',
+		hideBorderInIDE: function(){
+			_hideBorderInIDE = true;
+		}
 	};
 
 	/** 
