@@ -6,6 +6,9 @@
 
 Create transformations based on a square defining the view port for animations and dynamic framing.
 
+Documentation
+--
+There is a JSDoc based documentation of the functions at https://doxdox.org/worldoptimizer/HypeDynamicCamera
 
 Content Delivery Network (CDN)
 --
