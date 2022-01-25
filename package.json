@@ -1,0 +1,8 @@
+{
+    "name": "Hype Dynamic Camera",
+    "description": "Create transformations based on a square defining the view port for animations and dynamic framing.",
+    "author": "Max Ziebell",
+    "main":	"HypeDynamicCamera.js",
+    "license": "MIT",
+    "dependencies": {}
+}
