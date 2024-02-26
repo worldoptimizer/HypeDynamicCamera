@@ -1,5 +1,5 @@
 /*!
-Hype Dynamic Camera 1.2.4
+Hype Dynamic Camera 1.2.5
 copyright (c) 2015 by Lucky (Tumult Forum @Luckyde)
 maintaind since 2018 by Max Ziebell, (https://maxziebell.de). MIT-license
 */
@@ -13,6 +13,7 @@ maintaind since 2018 by Max Ziebell, (https://maxziebell.de). MIT-license
 * 1.2.2 Fixed inital update regression after switching to Mutation Observer
 * 1.2.3 Moved the automatic application of the observer to HypeScenePrepareForDisplay
 * 1.2.4 Added border style for IDE, HypeDynamicCamera.hideBorderInIDE, .dynamic-camera-no-border and --dynamic-camera-border
+* 1.2.5 Fixed stage selector to be more user-friendly by adding a new stageFit and exposing showCamera to data attributes
 */
 if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (function () {
 
@@ -29,6 +30,7 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 		// delay a frame
 		requestAnimationFrame(function(){
 			if (_hideBorderInIDE) return;
+			// create and append style
 			_installedCSS = true;
 			var s=document.createElement("style");
 			s.setAttribute("type","text/css");
@@ -78,14 +80,18 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 			
 				// fetch current cameraElm transforms
 				camMatrix = new WebKitCSSMatrix(window.getComputedStyle(cameraElm).webkitTransform)
-				stageW = hypeDocument.getElementProperty(sceneElm, 'width');
-				stageH = hypeDocument.getElementProperty(sceneElm, 'height');
+				
+				// fetch current cameraElm properties
 				camL = hypeDocument.getElementProperty(cameraElm, 'left');
 				camT = hypeDocument.getElementProperty(cameraElm, 'top');
 				camH = hypeDocument.getElementProperty(cameraElm, 'height');
 				camW = hypeDocument.getElementProperty(cameraElm, 'width');
 				camsX = hypeDocument.getElementProperty(cameraElm, 'scaleX');
 				camsY = hypeDocument.getElementProperty(cameraElm, 'scaleY');
+
+				// fetch stageW and stageH if not set
+				if (!stageW) stageW = hypeDocument.getElementProperty(stageElm, 'width');
+				if (!stageH) stageH = hypeDocument.getElementProperty(stageElm, 'height');
 
 				// calc missing values 
 				angle = -Math.atan2(camMatrix.b, camMatrix.a) * DEG;
@@ -97,15 +103,34 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 				originY = (realT + (realH / 2));
 				translateX = (originX - (stageW / 2)) * -1;
 				translateY = (originY - (stageH / 2)) * -1;
+				
+				// Calculate scale factors independently
 				scaleW = stageW / realW;
 				scaleH = stageH / realH;
-
-				// apply transformation to stageElm to match camera
+			
+				// Determine the larger scale factor to ensure full scene coverage
+				switch (options.stageFit) {
+					default:
+					case "contain":
+						scaleW = scaleH = Math.min(scaleW, scaleH);
+						break;
+					
+					case "cover":
+						scaleW = scaleH = Math.max(scaleW, scaleH);
+						break;
+				
+					case "fill":
+						break;
+				}
+			
+				// Apply uniform scaling to both dimensions
 				stageElm.style.transformOrigin = stageElm.style.WebkitTransformOrigin = originX + "px " + originY + "px";
 				stageElm.style.webkitTransform = stageElm.style.transform = "translateX(" + translateX + "px) translateY(" + translateY + "px) scaleX(" + scaleW + ") scaleY(" + scaleH + ") rotateZ(" + (angle) + "deg)";
+			
+				// Apply camera's visual properties to the stage
 				stageElm.style.webkitFilter = cameraElm.style.webkitFilter;
 				stageElm.style.opacity = cameraElm.style.opacity;
-				stageElm.style.display = cameraElm.style.display;	
+				stageElm.style.display = cameraElm.style.display;
 			}
 
 			// create and start observer
@@ -132,7 +157,10 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 		var sceneElm = document.getElementById(hypeDocument.currentSceneId());
 		sceneElm.querySelectorAll('[data-dynamic-camera]').forEach(function(elm){
 			var stageSelector = elm.getAttribute('data-dynamic-camera');
-			hypeDocument.setupDynamicCamera(elm, stageSelector);
+			hypeDocument.setupDynamicCamera(elm, stageSelector, {
+				stageFit: elm.getAttribute('data-dynamic-camera-stage-fit'),
+				showCamera: elm.hasAttribute('data-dynamic-camera-show')
+			});
 		});
 	}
 
@@ -147,7 +175,7 @@ if("HypeDynamicCamera" in window === false) window['HypeDynamicCamera'] = (funct
 	 * @property {String} version Version of the extension
 	 */
 	 var HypeDynamicCamera = {
-		version: '1.2.4',
+		version: '1.2.5',
 		hideBorderInIDE: function(){
 			_hideBorderInIDE = true;
 		}
